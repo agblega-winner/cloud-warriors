@@ -1,0 +1,899 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARCHIPEL - Console Unifiée</title>
+  <style>
+    :root {
+      --bg: #07111e;
+      --bg-soft: #102136;
+      --panel: #0c1b2e;
+      --panel-2: #122742;
+      --line: #224464;
+      --accent: #16c6a4;
+      --accent-2: #0fe3be;
+      --warn: #f4a340;
+      --danger: #ff6b5d;
+      --text: #d6e4f4;
+      --muted: #89a4bf;
+      --ok: #69f0c8;
+      --shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Segoe UI", "Trebuchet MS", Tahoma, sans-serif;
+      background:
+        radial-gradient(1200px 700px at 92% -15%, rgba(15, 227, 190, 0.15), transparent 60%),
+        radial-gradient(900px 500px at -10% 95%, rgba(244, 163, 64, 0.16), transparent 62%),
+        linear-gradient(160deg, #050c17 0%, #091529 45%, #06101f 100%);
+    }
+
+    .app {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      background: rgba(12, 27, 46, 0.88);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: 1.15rem;
+      letter-spacing: 0.04em;
+    }
+
+    .title p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border: 1px solid rgba(105, 240, 200, 0.35);
+      border-radius: 999px;
+      color: var(--ok);
+      background: rgba(13, 44, 52, 0.45);
+      font-size: 0.8rem;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--ok);
+      box-shadow: 0 0 12px rgba(105, 240, 200, 0.95);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(100px, 1fr));
+      gap: 10px;
+    }
+
+    .stat {
+      background: rgba(12, 27, 46, 0.86);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .stat strong {
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 1.1rem;
+      color: var(--accent-2);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      border: 1px solid var(--line);
+      background: rgba(15, 33, 57, 0.8);
+      color: var(--muted);
+      border-radius: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .tab.active {
+      color: #032a25;
+      background: linear-gradient(120deg, var(--accent), var(--accent-2));
+      border-color: transparent;
+    }
+
+    .view {
+      display: none;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .view.active { display: grid; }
+
+    .card {
+      background: rgba(12, 27, 46, 0.88);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card h2 {
+      margin: 0;
+      padding: 10px 12px;
+      font-size: 0.95rem;
+      border-bottom: 1px solid var(--line);
+      background: rgba(18, 39, 66, 0.78);
+    }
+
+    .body {
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .row {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #0a182a;
+      color: var(--text);
+      font: inherit;
+      padding: 9px 10px;
+    }
+
+    textarea { min-height: 88px; resize: vertical; }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 9px 12px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(120deg, var(--accent), var(--accent-2));
+      color: #032a25;
+    }
+
+    button.secondary {
+      background: rgba(15, 33, 57, 0.9);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    button.danger {
+      background: rgba(255, 107, 93, 0.12);
+      border: 1px solid rgba(255, 107, 93, 0.4);
+      color: #ffd3cd;
+    }
+
+    .list {
+      max-height: 285px;
+      overflow: auto;
+      display: grid;
+      gap: 8px;
+    }
+
+    .item {
+      border: 1px solid var(--line);
+      background: rgba(9, 23, 40, 0.9);
+      border-radius: 10px;
+      padding: 9px;
+      display: grid;
+      gap: 6px;
+      font-size: 0.88rem;
+    }
+
+    .item code {
+      font-family: "Consolas", "Courier New", monospace;
+      color: var(--accent-2);
+      font-size: 0.8rem;
+      word-break: break-all;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .actions button {
+      padding: 5px 8px;
+      font-size: 0.78rem;
+    }
+
+    .progress {
+      height: 8px;
+      border-radius: 999px;
+      background: #0d2034;
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .progress > div {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--warn), #ffd27c);
+      transition: width 0.2s linear;
+    }
+
+    .logs {
+      max-height: 240px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #081626;
+      padding: 8px;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+
+    .log { margin: 3px 0; color: #bbd1e8; }
+    .log.err { color: #ffb1a8; }
+    .log.ok { color: #98f7d6; }
+    .log.warn { color: #f4d39a; }
+
+    @media (max-width: 1080px) {
+      .stats { grid-template-columns: repeat(3, minmax(90px, 1fr)); }
+      .view { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .app { padding: 10px; }
+      .header { flex-direction: column; align-items: flex-start; }
+      .stats { grid-template-columns: repeat(2, minmax(90px, 1fr)); width: 100%; }
+      .row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="title">
+        <h1>ARCHIPEL H24 - Console Opérationnelle</h1>
+        <p id="identityLabel">Node: chargement...</p>
+      </div>
+      <div class="pill"><span class="dot"></span><span id="wsState">Connexion WebSocket...</span></div>
+      <div class="stats">
+        <div class="stat"><strong id="sPeers">0</strong><span>Pairs</span></div>
+        <div class="stat"><strong id="sMsgs">0</strong><span>Messages</span></div>
+        <div class="stat"><strong id="sTransfers">0</strong><span>Transferts</span></div>
+        <div class="stat"><strong id="sManifests">0</strong><span>Manifests</span></div>
+        <div class="stat"><strong id="sSessions">0</strong><span>Sessions</span></div>
+      </div>
+    </header>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="sprint1">Sprint 1 - Réseau</button>
+      <button class="tab" data-tab="sprint2">Sprint 2 - Crypto</button>
+      <button class="tab" data-tab="sprint3">Sprint 3 - Transfert</button>
+      <button class="tab" data-tab="logs">Journal Système</button>
+    </div>
+
+    <section id="view-sprint1" class="view active">
+      <article class="card">
+        <h2>Découverte et gestion des pairs</h2>
+        <div class="body">
+          <div class="actions">
+            <button id="btnDiscover">Lancer découverte UDP</button>
+            <button class="secondary" id="btnRefreshPeers">Rafraîchir pairs</button>
+          </div>
+          <div class="row">
+            <input id="peerNodeId" placeholder="nodeId (optionnel si publicKey)" />
+            <input id="peerIp" placeholder="IP (ex: 127.0.0.1)" value="127.0.0.1" />
+          </div>
+          <div class="row">
+            <input id="peerPort" placeholder="Port TCP" value="7777" />
+            <input id="peerPub" placeholder="Public key base64 (optionnel)" />
+          </div>
+          <div class="row">
+            <input id="peerApiPort" placeholder="Port API HTTP du pair" value="3000" />
+            <input id="peerNote" placeholder="Note (optionnel)" />
+          </div>
+          <button id="btnAddPeer">Ajouter pair</button>
+          <div id="peerList" class="list"></div>
+        </div>
+      </article>
+      <article class="card">
+        <h2>État du réseau</h2>
+        <div class="body">
+          <div id="networkSummary" class="item">Aucune donnée réseau.</div>
+          <div class="logs" id="liveLog"></div>
+        </div>
+      </article>
+    </section>
+
+    <section id="view-sprint2" class="view">
+      <article class="card">
+        <h2>Messagerie chiffrée</h2>
+        <div class="body">
+          <div class="row">
+            <input id="msgPeer" placeholder="nodeId du pair" />
+            <input id="msgContent" placeholder="Message à envoyer" />
+          </div>
+          <div class="actions">
+            <button id="btnSend">Envoyer MSG chiffré</button>
+            <button class="secondary" id="btnReceive">Simuler réception</button>
+          </div>
+          <div id="messageList" class="list"></div>
+        </div>
+      </article>
+      <article class="card">
+        <h2>Sessions crypto et confiance (TOFU)</h2>
+        <div class="body">
+          <div id="cryptoInfo" class="item">Aucune session active.</div>
+          <div class="item">
+            <strong>Assistant Gemini</strong>
+            <div>Utilise <code>/ask question</code> ou <code>@archipel-ai question</code> dans le chat.</div>
+            <textarea id="aiPrompt" placeholder="Question directe à Gemini"></textarea>
+            <div class="actions">
+              <button class="secondary" id="btnAskAi">Interroger Gemini</button>
+            </div>
+            <div id="aiReplies" class="list"></div>
+          </div>
+          <div id="trustList" class="list"></div>
+        </div>
+      </article>
+    </section>
+
+    <section id="view-sprint3" class="view">
+      <article class="card">
+        <h2>Partage et transfert de fichiers</h2>
+        <div class="body">
+          <div class="actions">
+            <button id="btnStartTransferServer">Démarrer serveur transfert</button>
+            <button class="secondary" id="btnRefreshTransfers">Rafraîchir historique</button>
+          </div>
+          <div class="row">
+            <input id="transferFile" placeholder="Chemin fichier à publier" />
+            <input id="transferPeer" placeholder="nodeId du pair cible" />
+          </div>
+          <button id="btnStartTransfer">Préparer transfert (chunk + manifest)</button>
+          <div class="row">
+            <input id="downloadPeer" placeholder="nodeId source" />
+            <input id="downloadFileId" placeholder="fileId manifest" />
+          </div>
+          <input id="downloadPath" placeholder="Chemin de sortie local" />
+          <button class="secondary" id="btnDownload">Télécharger depuis pair</button>
+          <div id="transferList" class="list"></div>
+        </div>
+      </article>
+      <article class="card">
+        <h2>Manifests disponibles</h2>
+        <div class="body">
+          <div id="manifestList" class="list"></div>
+        </div>
+      </article>
+    </section>
+
+    <section id="view-logs" class="view">
+      <article class="card" style="grid-column:1/-1;">
+        <h2>Journal backend en temps réel</h2>
+        <div class="body">
+          <div class="actions">
+            <button class="secondary" id="btnStatus">Recharger état global</button>
+            <button class="secondary" id="btnClearLogs">Vider logs</button>
+          </div>
+          <div id="systemLog" class="logs" style="max-height:460px;"></div>
+        </div>
+      </article>
+    </section>
+  </div>
+
+  <script>
+    const API = `${location.protocol}//${location.host}`;
+    const WS_URL = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`;
+
+    const state = {
+      peers: [],
+      messages: [],
+      transfers: [],
+      manifests: [],
+      trust: [],
+      sessions: [],
+      aiContext: [],
+    };
+
+    let ws;
+
+    const el = (id) => document.getElementById(id);
+
+    function renderStats(extra = {}) {
+      el('sPeers').textContent = state.peers.length;
+      el('sMsgs').textContent = state.messages.length;
+      el('sTransfers').textContent = state.transfers.length;
+      el('sManifests').textContent = state.manifests.length;
+      el('sSessions').textContent = state.sessions.length;
+      if (extra.identity) {
+        el('identityLabel').textContent = `Node: ${extra.identity.nodeId} | clé publique: ${extra.identity.publicKey}`;
+      }
+    }
+
+    function writeLog(targetId, text, type = '') {
+      const node = document.createElement('div');
+      node.className = `log ${type}`;
+      node.textContent = `[${new Date().toLocaleTimeString('fr-FR')}] ${text}`;
+      const box = el(targetId);
+      box.appendChild(node);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function renderPeers() {
+      const box = el('peerList');
+      box.innerHTML = '';
+
+      if (!state.peers.length) {
+        box.innerHTML = '<div class="item">Aucun pair détecté.</div>';
+      }
+
+      state.peers.forEach((p) => {
+        const card = document.createElement('div');
+        card.className = 'item';
+        card.innerHTML = `
+          <strong>${p.nodeId}</strong>
+          <div>${p.ip}:${p.port} | API: ${p.apiPort || 3000} | réputation: ${(p.reputation ?? 1).toFixed(2)}</div>
+          <code>${p.publicKey ? p.publicKey.slice(0, 52) + '...' : 'publicKey non fournie'}</code>
+          <div class="actions">
+            <button class="secondary" data-fill-peer="${p.nodeId}">Sélectionner</button>
+            <button class="danger" data-del-peer="${p.nodeId}">Supprimer</button>
+          </div>`;
+        box.appendChild(card);
+      });
+
+      box.querySelectorAll('[data-fill-peer]').forEach((btn) => {
+        btn.onclick = () => {
+          const id = btn.getAttribute('data-fill-peer');
+          el('msgPeer').value = id;
+          el('transferPeer').value = id;
+          el('downloadPeer').value = id;
+        };
+      });
+
+      box.querySelectorAll('[data-del-peer]').forEach((btn) => {
+        btn.onclick = async () => {
+          const id = btn.getAttribute('data-del-peer');
+          await api(`/api/peers/${id}`, { method: 'DELETE' });
+          await refreshCore();
+        };
+      });
+
+      const summary = state.peers.map((p) => `${p.nodeId}@${p.ip}:${p.port}`).join(' | ');
+      el('networkSummary').textContent = summary || 'Réseau vide. Ajoutez un pair ou lancez la découverte.';
+    }
+
+    function renderMessages() {
+      const box = el('messageList');
+      box.innerHTML = '';
+      if (!state.messages.length) {
+        box.innerHTML = '<div class="item">Aucun message enregistré.</div>';
+        return;
+      }
+      state.messages.slice().reverse().forEach((m) => {
+        const row = document.createElement('div');
+        row.className = 'item';
+        row.innerHTML = `
+          <strong>${m.status === 'sent' ? 'Sortant' : 'Entrant'} - ${m.id}</strong>
+          <div>${m.from} -> ${m.to}</div>
+          <div>${m.content}</div>
+          ${m.delivery ? `<div>livraison: ${m.delivery}</div>` : ''}
+          ${m.encryptedPreview ? `<code>chiffré: ${m.encryptedPreview}...</code>` : ''}
+          <div>${new Date(m.timestamp).toLocaleString('fr-FR')}</div>`;
+        box.appendChild(row);
+      });
+    }
+
+    function renderAiReplies() {
+      const box = el('aiReplies');
+      box.innerHTML = '';
+      if (!state.aiContext.length) {
+        box.innerHTML = '<div class="item">Aucune réponse IA.</div>';
+        return;
+      }
+
+      state.aiContext.slice().reverse().forEach((entry) => {
+        const row = document.createElement('div');
+        row.className = 'item';
+        row.innerHTML = `
+          <strong>${entry.role === 'user' ? 'Question' : 'Gemini'} (${entry.source || 'local'})</strong>
+          <div>${entry.text}</div>`;
+        box.appendChild(row);
+      });
+    }
+
+    function renderCrypto() {
+      el('cryptoInfo').innerHTML = `
+        <div>Algorithmes: AES-256-GCM / X25519 / Ed25519 / HMAC-SHA256</div>
+        <div>Sessions actives: ${state.sessions.length}</div>`;
+
+      const box = el('trustList');
+      box.innerHTML = '';
+      if (!state.trust.length) {
+        box.innerHTML = '<div class="item">Trust store vide.</div>';
+        return;
+      }
+
+      state.trust.forEach((t) => {
+        const card = document.createElement('div');
+        card.className = 'item';
+        card.innerHTML = `
+          <strong>${t.nodeId}</strong>
+          <div>trustScore: ${Number(t.trustScore || 0).toFixed(2)} | trusted: ${t.trusted ? 'oui' : 'non'}</div>
+          <code>fingerprint: ${t.fingerprint || 'n/a'}</code>
+          <div class="actions">
+            <button class="secondary" data-certify="${t.nodeId}">Certifier</button>
+            <button class="danger" data-revoke="${t.nodeId}">Révoquer</button>
+          </div>`;
+        box.appendChild(card);
+      });
+
+      box.querySelectorAll('[data-certify]').forEach((btn) => {
+        btn.onclick = () => manageTrust('/api/trust/certify', btn.getAttribute('data-certify'));
+      });
+      box.querySelectorAll('[data-revoke]').forEach((btn) => {
+        btn.onclick = () => manageTrust('/api/trust/revoke', btn.getAttribute('data-revoke'));
+      });
+    }
+
+    function renderTransfers() {
+      const list = el('transferList');
+      list.innerHTML = '';
+
+      if (!state.transfers.length) {
+        list.innerHTML = '<div class="item">Aucun transfert en cours ou historique.</div>';
+      }
+
+      state.transfers.slice().reverse().forEach((t) => {
+        const row = document.createElement('div');
+        row.className = 'item';
+        row.innerHTML = `
+          <strong>${t.fileName || t.fileId || t.id}</strong>
+          <div>pair: ${t.peerId} | statut: ${t.status}</div>
+          <div>${(t.fileSize / 1024 / 1024 || 0).toFixed(2)} Mo</div>
+          <div class="progress"><div style="width:${t.percent || 0}%"></div></div>
+          <div>${t.percent || 0}%</div>`;
+        list.appendChild(row);
+      });
+
+      const mBox = el('manifestList');
+      mBox.innerHTML = '';
+      if (!state.manifests.length) {
+        mBox.innerHTML = '<div class="item">Aucun manifest local.</div>';
+      }
+
+      state.manifests.forEach((m) => {
+        const card = document.createElement('div');
+        card.className = 'item';
+        card.innerHTML = `
+          <strong>${m.filename}</strong>
+          <div>file_id: <code>${m.file_id}</code></div>
+          <div>chunks: ${m.nb_chunks} | taille: ${(m.size / 1024 / 1024).toFixed(2)} Mo</div>
+          <div>source: ${m.sender_id}</div>`;
+        mBox.appendChild(card);
+      });
+    }
+
+    async function api(url, init = {}) {
+      const res = await fetch(`${API}${url}`, {
+        headers: { 'Content-Type': 'application/json' },
+        ...init,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.status === 'error') {
+        throw new Error(data.message || `Erreur API ${url}`);
+      }
+      return data;
+    }
+
+    async function refreshCore() {
+      const [status, peers, messages, transfers, manifests, crypto, trust] = await Promise.all([
+        api('/api/status'),
+        api('/api/peers'),
+        api('/api/messages'),
+        api('/api/transfers'),
+        api('/api/manifests'),
+        api('/api/crypto'),
+        api('/api/trust'),
+      ]);
+
+      state.peers = peers;
+      state.messages = messages;
+      state.transfers = transfers;
+      state.manifests = manifests;
+      state.sessions = crypto.sessions || [];
+      state.trust = trust;
+
+      renderStats({ identity: status.identity });
+      renderPeers();
+      renderMessages();
+      renderCrypto();
+      renderTransfers();
+      renderAiReplies();
+    }
+
+    async function manageTrust(endpoint, nodeId) {
+      try {
+        await api(endpoint, {
+          method: 'POST',
+          body: JSON.stringify({ nodeId }),
+        });
+        writeLog('systemLog', `Trust mis à jour pour ${nodeId}`, 'ok');
+        await refreshCore();
+      } catch (err) {
+        writeLog('systemLog', err.message, 'err');
+      }
+    }
+
+    async function queryAi(rawPrompt) {
+      const prompt = String(rawPrompt || '').trim();
+      if (!prompt) return;
+
+      state.aiContext.push({ role: 'user', text: prompt, source: 'ui' });
+      renderAiReplies();
+
+      try {
+        const response = await api('/api/ai/query', {
+          method: 'POST',
+          body: JSON.stringify({
+            query: prompt,
+            context: state.aiContext.map((entry) => `${entry.role}: ${entry.text}`),
+          }),
+        });
+        state.aiContext.push({
+          role: 'assistant',
+          text: response.answer,
+          source: response.source || response.status || 'ai',
+        });
+        writeLog('systemLog', `Réponse Gemini (${response.source || response.status})`, 'ok');
+      } catch (err) {
+        state.aiContext.push({
+          role: 'assistant',
+          text: `Erreur IA: ${err.message}`,
+          source: 'error',
+        });
+        writeLog('systemLog', `Erreur Gemini: ${err.message}`, 'err');
+      }
+
+      renderAiReplies();
+    }
+
+    function connectWS() {
+      ws = new WebSocket(WS_URL);
+
+      ws.onopen = () => {
+        el('wsState').textContent = 'WebSocket connecté';
+        writeLog('systemLog', 'Connexion WebSocket établie', 'ok');
+      };
+
+      ws.onclose = () => {
+        el('wsState').textContent = 'WebSocket déconnecté - reconnexion';
+        writeLog('systemLog', 'WebSocket coupé, tentative de reconnexion', 'warn');
+        setTimeout(connectWS, 2000);
+      };
+
+      ws.onerror = () => {
+        writeLog('systemLog', 'Erreur WebSocket', 'err');
+      };
+
+      ws.onmessage = (event) => {
+        const payload = JSON.parse(event.data);
+        if (payload.type === 'init') {
+          renderStats({ identity: payload.data.identity });
+          return;
+        }
+
+        if (payload.type === 'peers-updated') {
+          state.peers = payload.data;
+          renderPeers();
+          renderStats();
+        }
+
+        if (payload.type === 'message-sent' || payload.type === 'message-received') {
+          state.messages.push(payload.data);
+          renderMessages();
+          renderStats();
+        }
+
+        if (payload.type === 'transfer-started' || payload.type === 'transfer-progress' || payload.type === 'transfer-completed') {
+          const idx = state.transfers.findIndex((t) => t.id === payload.data.id);
+          if (idx >= 0) state.transfers[idx] = payload.data;
+          else state.transfers.push(payload.data);
+          renderTransfers();
+          renderStats();
+        }
+
+        if (payload.type === 'log') {
+          writeLog('systemLog', payload.data, 'ok');
+          writeLog('liveLog', payload.data, 'ok');
+        }
+
+        if (payload.type === 'error') {
+          writeLog('systemLog', payload.data, 'err');
+          writeLog('liveLog', payload.data, 'err');
+        }
+      };
+    }
+
+    function wireUI() {
+      document.querySelectorAll('.tab').forEach((tab) => {
+        tab.onclick = () => {
+          document.querySelectorAll('.tab').forEach((t) => t.classList.remove('active'));
+          document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
+          tab.classList.add('active');
+          el(`view-${tab.dataset.tab}`).classList.add('active');
+        };
+      });
+
+      el('btnDiscover').onclick = async () => {
+        try {
+          await api('/api/discover', { method: 'POST', body: JSON.stringify({ waitMs: 2200 }) });
+          writeLog('systemLog', 'Découverte lancée', 'ok');
+          await refreshCore();
+        } catch (err) {
+          writeLog('systemLog', err.message, 'err');
+        }
+      };
+
+      el('btnRefreshPeers').onclick = refreshCore;
+
+      el('btnAddPeer').onclick = async () => {
+        try {
+          await api('/api/peers', {
+            method: 'POST',
+            body: JSON.stringify({
+              nodeId: el('peerNodeId').value || undefined,
+              ip: el('peerIp').value || undefined,
+              port: Number(el('peerPort').value || 7777),
+              apiPort: Number(el('peerApiPort').value || 3000),
+              publicKey: el('peerPub').value || undefined,
+              note: el('peerNote').value || undefined,
+            }),
+          });
+          writeLog('systemLog', 'Pair ajouté', 'ok');
+          await refreshCore();
+        } catch (err) {
+          writeLog('systemLog', err.message, 'err');
+        }
+      };
+
+      el('btnSend').onclick = async () => {
+        try {
+          const peerId = el('msgPeer').value;
+          const content = el('msgContent').value;
+          if (!content.trim()) {
+            return;
+          }
+
+          if (content.trim().startsWith('/ask') || content.includes('@archipel-ai')) {
+            const cleanPrompt = content.replace('/ask', '').replace('@archipel-ai', '').trim();
+            await queryAi(cleanPrompt || content);
+            el('msgContent').value = '';
+            return;
+          }
+
+          await api('/api/send-message', {
+            method: 'POST',
+            body: JSON.stringify({ peerId, content }),
+          });
+          el('msgContent').value = '';
+          await refreshCore();
+        } catch (err) {
+          writeLog('systemLog', err.message, 'err');
+        }
+      };
+
+      el('btnReceive').onclick = async () => {
+        try {
+          await api('/api/receive-message', {
+            method: 'POST',
+            body: JSON.stringify({ peerId: el('msgPeer').value, content: el('msgContent').value || 'message simulé' }),
+          });
+          await refreshCore();
+        } catch (err) {
+          writeLog('systemLog', err.message, 'err');
+        }
+      };
+
+      el('btnStartTransferServer').onclick = async () => {
+        try {
+          await api('/api/start-transfer-server', { method: 'POST' });
+          await refreshCore();
+        } catch (err) {
+          writeLog('systemLog', err.message, 'err');
+        }
+      };
+
+      el('btnStartTransfer').onclick = async () => {
+        try {
+          const data = await api('/api/transfer', {
+            method: 'POST',
+            body: JSON.stringify({ filePath: el('transferFile').value, peerId: el('transferPeer').value }),
+          });
+          el('downloadFileId').value = data.manifest.file_id;
+          await refreshCore();
+        } catch (err) {
+          writeLog('systemLog', err.message, 'err');
+        }
+      };
+
+      el('btnDownload').onclick = async () => {
+        try {
+          await api('/api/download', {
+            method: 'POST',
+            body: JSON.stringify({
+              peerId: el('downloadPeer').value,
+              fileId: el('downloadFileId').value,
+              outputPath: el('downloadPath').value,
+            }),
+          });
+          await refreshCore();
+        } catch (err) {
+          writeLog('systemLog', err.message, 'err');
+        }
+      };
+
+      el('btnRefreshTransfers').onclick = refreshCore;
+      el('btnAskAi').onclick = async () => {
+        await queryAi(el('aiPrompt').value);
+        el('aiPrompt').value = '';
+      };
+      el('btnStatus').onclick = refreshCore;
+      el('btnClearLogs').onclick = () => {
+        el('systemLog').innerHTML = '';
+        el('liveLog').innerHTML = '';
+      };
+    }
+
+    async function init() {
+      wireUI();
+      connectWS();
+      try {
+        await refreshCore();
+      } catch (err) {
+        writeLog('systemLog', `Init échouée: ${err.message}`, 'err');
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

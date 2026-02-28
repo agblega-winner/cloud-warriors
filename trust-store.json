@@ -1,0 +1,30 @@
+{
+  "peer-test-1": {
+    "publicKey": "G4ICiAgaIM4Tpsk4iGdjDlCof9RlpxlQFh+bFgql9dA=",
+    "fingerprint": "abb7d620c9ea870dcdcf1e715f32036f",
+    "firstSeen": 1772277947020,
+    "trusted": true,
+    "trustScore": 1
+  },
+  "b63056293dea2646": {
+    "publicKey": "CWFYFAIaB8z7CKp5nGnyImVV3RRPwk2uIef5Vo7FLp4=",
+    "fingerprint": "b63056293dea2646b0ac2416e6f2c0e4",
+    "firstSeen": 1772279947843,
+    "trusted": true,
+    "trustScore": 1
+  },
+  "2fd14554119c97fd": {
+    "publicKey": "RvR5CSCgC+uPRc/X99qtfAB6MpaoTvaxxnrLnGbwhig=",
+    "fingerprint": "2fd14554119c97fdc2034802f5821d3a",
+    "firstSeen": 1772279974360,
+    "trusted": true,
+    "trustScore": 1
+  },
+  "0e444983bb2dd472": {
+    "publicKey": "XWqhIphfelKOmAr8V7OWiKREIIjOzioBDviddfjYxHk=",
+    "fingerprint": "0e444983bb2dd472eafa0f810cdc62cc",
+    "firstSeen": 1772279974375,
+    "trusted": true,
+    "trustScore": 1
+  }
+}
