@@ -1,0 +1,12 @@
+{
+  "name": "archipel-h24",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Archipel hackathon - Sprint 1 P2P discovery and routing",
+  "main": "run_node.js",
+  "scripts": {
+    "start": "node run_node.js",
+    "demo:sprint1": "powershell -ExecutionPolicy Bypass -File .\\scripts\\demo_sprint1.ps1"
+  }
+}
+

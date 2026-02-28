@@ -1,0 +1,16 @@
+{
+  "c7fc861949ab7261": {
+    "publicKey": "cLeM1wnpmST6oPSwBCsu/WEk3oYX8XkvSnvFxST95yY=",
+    "fingerprint": "c7fc861949ab7261c6ea32f8752f9be3",
+    "firstSeen": 1772247300922,
+    "trusted": true,
+    "trustScore": 1
+  },
+  "4154f55b20db91d6": {
+    "publicKey": "9AcLZQEIRRg/IHPUL+AVrPHy2+LwkqmnuqRehRf/U84=",
+    "fingerprint": "4154f55b20db91d65b25acb442d3f080",
+    "firstSeen": 1772247300923,
+    "trusted": true,
+    "trustScore": 1
+  }
+}
